@@ -8,14 +8,30 @@
 ##' 
 ##' At the moment, only beech and spruce are implemented.
 ##' @title Stem volume
-##' @param d stem diameter in 1.3 m height in cm
-##' @param h height in m
+##' @param d numeric vector with stem diameters in 1.3 m height in cm
+##' @param h numeric vectors with height in m
 ##' @param species character
-##' @return a single value giving the volume of the tree in cubic metres
+##' @return numeric vector with volume of the trees in cubic metres
 ##' @examples
-##' volume(45, 29, "fagus_sylvatica")
+##' volume(30:35, 20:25, "fagus_sylvatica")
 ##' @export
-volume <- function(d, h, species) {
+volume <- function(d, h, species = "fagus_sylvatica") {
+
+  if (!is.numeric(d) | !is.numeric(h)) {
+    stop("d and h have to be numeric")
+  }
+
+  if (length(d) != length(h)) {
+    stop("d and h have to have the same length")
+  }
+
+  species_list <- c("fagus_sylvatica",
+                    "picea_abies")
+  
+  if (!any(species_list == species)) {
+    stop("unknown species")
+  }
+  
   species_coefs <- list(
     picea_abies = c(
       k11  = -3.5962
@@ -40,11 +56,22 @@ volume <- function(d, h, species) {
       )
     )
   cl2 <- species_coefs[[species]]
-  cl1 <- unname(c(
+
+  cl1f <- function(d) {
+    unname(c(
     cl2["k11"] + cl2["k12"] * log(d) + cl2["k13"] * log(d)^2
     ,cl2["k21"] + cl2["k22"] * log(d) + cl2["k23"] * log(d)^2
     ,cl2["k31"] + cl2["k32"] * log(d) + cl2["k33"] * log(d)^2
     ))
-  formh <- exp(cl1[1] + cl1[2] * log(h) + cl1[3] * log(h)^2)
+  }
+
+  cl1 <- lapply(d, cl1f)
+
+  formhf <- function(h, coef) {
+    exp(coef[1] + coef[2] * log(h) + coef[3] * log(h)^2)
+  }
+
+  formh <- mapply(formhf, h, cl1)
+
   d^2 * pi/40000 * formh
 }

@@ -4,8 +4,10 @@ Title: Metrics for Forest Growth and Yield Science
 Version: 0.1
 Date: 2015-03-24
 Author: Christian Zang
-Imports: data.table
+Imports:
+    data.table
 Maintainer: Christian Zang <christian.zang@wzw.tum.de>
-Description: Calculation of some popular metrics for forest growth and yield science
+Description: Calculation of some popular metrics for forest growth and yield
+    science
 License: GPL-3
 LazyLoad: yes

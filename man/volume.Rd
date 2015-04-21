@@ -4,17 +4,17 @@
 \alias{volume}
 \title{Stem volume}
 \usage{
-volume(d, h, species)
+volume(d, h, species = "fagus_sylvatica")
 }
 \arguments{
-\item{d}{stem diameter in 1.3 m height in cm}
+\item{d}{numeric vector with stem diameters in 1.3 m height in cm}
 
-\item{h}{height in m}
+\item{h}{numeric vectors with height in m}
 
 \item{species}{character}
 }
 \value{
-a single value giving the volume of the tree in cubic metres
+numeric vector with volume of the trees in cubic metres
 }
 \description{
 Calculate stem volume based on height, diameter and species
@@ -29,6 +29,6 @@ which depends on height alone.
 At the moment, only beech and spruce are implemented.
 }
 \examples{
-volume(45, 29, "fagus_sylvatica")
+volume(30:35, 20:25, "fagus_sylvatica")
 }
 

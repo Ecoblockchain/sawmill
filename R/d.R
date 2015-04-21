@@ -33,7 +33,8 @@ diam_group <- function(x, s = 1) {
 ##' @param x a vector of diameters
 ##' @param method "ar" for arithmetic, "qmd" for quadratic mean
 ##' diameter, "gfz" for Grundflaechenzentralstamm, "dom" for dominant
-##' diameter
+##' diameter based on a given number of trees, "do" for dominant
+##' diameter based on basal area of 100 largest trees per ha.
 ##' @param s class size (integer) 
 ##' @param a size of area in ha
 ##' @param n number of trees/ha for dominant diameter
@@ -43,12 +44,12 @@ diam_group <- function(x, s = 1) {
 ##' d <- rnorm(40, mean = 50, sd = 3)
 ##' diam(d)
 ##' @export
-diam <- function(x, method = c("ar", "qmd", "gfz", "dom"), s = 1, a = 1, n = 100) {
+diam <- function(x, method = c("ar", "qmd", "gfz", "dom", "do"), s = 1, a = 1, n = 100) {
 
-  methods <- method[method %in% c("ar", "qmd", "gfz", "dom")]
+  methods <- method[method %in% c("ar", "qmd", "gfz", "dom", "do")]
 
   if (length(methods) == 0) {
-    stop("`method` can be 'ar', 'qmd', 'gfz', or 'dom'.")
+    stop("`method` can be 'ar', 'qmd', 'gfz', 'dom', or 'do'.")
   }
 
   methods <- unique(methods)
@@ -96,6 +97,17 @@ diam <- function(x, method = c("ar", "qmd", "gfz", "dom"), s = 1, a = 1, n = 100
       n <- floor(n * a)
       if(n >= length(x)) stop("n is too large.")
       res <- mean(sort(x, decreasing = TRUE)[1:n])
+      out <- c(out, res)
+    }
+
+    if (.method == "do") {
+      n <- floor(100 * a)
+      if(n >= length(x)) {
+        n <- floor(0.75 * length(x))
+        message(paste0("n adjusted to ", n, "."))
+      }
+      .x <- sort(x, decreasing = TRUE)[1:n]
+      res <- sqrt(sum(.x^2)/n)
       out <- c(out, res)
     }
 

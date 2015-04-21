@@ -4,14 +4,16 @@
 \alias{diam}
 \title{Calculate Mean Diameters}
 \usage{
-diam(x, method = c("ar", "qmd", "gfz", "dom"), s = 1, a = 1, n = 100)
+diam(x, method = c("ar", "qmd", "gfz", "dom", "do"), s = 1, a = 1,
+  n = 100)
 }
 \arguments{
 \item{x}{a vector of diameters}
 
 \item{method}{"ar" for arithmetic, "qmd" for quadratic mean
 diameter, "gfz" for Grundflaechenzentralstamm, "dom" for dominant
-diameter}
+diameter based on a given number of trees, "do" for dominant
+diameter based on basal area of 100 largest trees per ha.}
 
 \item{s}{class size (integer)}
 

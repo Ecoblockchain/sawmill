@@ -32,29 +32,40 @@ diam_group <- function(x, s = 1) {
 ##' @title Calculate Mean Diameters
 ##' @param x a vector of diameters
 ##' @param method "ar" for arithmetic, "qmd" for quadratic mean
-##' diameter, "gfz" for Grundflaechenzentralstamm, "dom" for dominant
-##' diameter based on a given number of trees, "do" for dominant
-##' diameter based on basal area of 100 largest trees per ha.
+##' diameter, "gfz" for Grundflaechenzentralstamm, "do" for dominant
+##' diameter based on basal area of 100 largest trees per ha, "d200"
+##' for dominant diameter based on basal area of 200 largest trees per
+##' ha, and "dw" for Weise'sche Oberhoehe.
 ##' @param s class size (integer) 
 ##' @param a size of area in ha
-##' @param n number of trees/ha for dominant diameter
 ##' @return a numeric vector with diameters
 ##' @import data.table
 ##' @examples
 ##' d <- rnorm(40, mean = 50, sd = 3)
 ##' diam(d)
 ##' @export
-diam <- function(x, method = c("ar", "qmd", "gfz", "dom", "do"), s = 1, a = 1, n = 100) {
+diam <- function(x, method = c("ar", "qmd", "gfz", "do", "d200", "dw"), s = 1, a = 1) {
 
-  methods <- method[method %in% c("ar", "qmd", "gfz", "dom", "do")]
+  methods <- method[method %in% c("ar", "qmd", "gfz", "do", "d200", "dw")]
 
   if (length(methods) == 0) {
-    stop("`method` can be 'ar', 'qmd', 'gfz', 'dom', or 'do'.")
+    stop("`method` can be 'ar', 'qmd', 'gfz', 'do', 'd200', or 'dw'.")
   }
 
   methods <- unique(methods)
   out <- numeric(0)
 
+  dn <- function(x, n, a, m) {
+      n <- floor(n * a)
+      if(n >= length(x)) {
+        n <- floor(0.75 * length(x))
+        message(paste0("n adjusted to ", n, " for method'", m, "'."))
+      }
+      .x <- sort(x, decreasing = TRUE)[1:n]
+      res <- sqrt(sum(.x^2)/n)
+      out <<- c(out, res)
+    }
+    
   for (.method in method) {
 
     if (.method == "ar") {
@@ -93,28 +104,20 @@ diam <- function(x, method = c("ar", "qmd", "gfz", "dom", "do"), s = 1, a = 1, n
       out <- c(out, res)
     }
 
-    if (.method == "dom") {
-      n <- floor(n * a)
-      if(n >= length(x)) stop("n is too large.")
-      res <- mean(sort(x, decreasing = TRUE)[1:n])
-      out <- c(out, res)
-    }
-
     if (.method == "do") {
-      n <- floor(100 * a)
-      if(n >= length(x)) {
-        n <- floor(0.75 * length(x))
-        message(paste0("n adjusted to ", n, "."))
-      }
-      .x <- sort(x, decreasing = TRUE)[1:n]
-      res <- sqrt(sum(.x^2)/n)
-      out <- c(out, res)
+      dn(x, 100, a, "do")
     }
 
+    if (.method == "d200") {
+      dn(x, 200, a, "d200")
+    }
+
+    if (.method == "dw") {
+      n <- floor(length(x) * a * 0.2)
+      dn(x, n, a, "dw")
+    }
   }
 
   names(out) <- methods
   out
 }
-
-

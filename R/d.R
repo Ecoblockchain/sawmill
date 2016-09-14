@@ -66,7 +66,7 @@ diam <- function(x, method = c("ar", "qmd", "gfz", "do", "d200", "dw"), s = 1, a
       out <<- c(out, res)
     }
     
-  for (.method in method) {
+  for (.method in methods) {
 
     if (.method == "ar") {
       res <- mean(x)

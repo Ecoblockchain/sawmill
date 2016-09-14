@@ -11,3 +11,4 @@ Description: Calculation of some popular metrics for forest growth and yield
     science
 License: GPL-3
 LazyLoad: yes
+RoxygenNote: 5.0.1
